@@ -1,0 +1,93 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Hero from "../components/Hero.astro";
+import ListSection from "../components/ListSection.astro";
+import PageFrame from "../components/PageFrame.astro";
+import SearchInput from "../components/SearchInput.astro";
+import { GITHUB_USER, NAME, SITE_DOMAIN } from "../lib/constant";
+
+const affiliation = {
+    label: "千葉大学 B3",
+    companyName: "燈株式会社",
+    companyUrl: "https://akariinc.co.jp/",
+    suffix: "インターン(2024/9/17〜)",
+};
+
+const bio =
+    "RustとTypeScriptが好きな大学生です。アルゴリズム高速化や機械学習、ゲームAIに興味があります。趣味は漫画と音楽です。";
+
+const formatDate = (date) =>
+    date instanceof Date ? date.toISOString().slice(0, 10) : "";
+
+const order = ["tech", "random", "music"];
+const sections = await Promise.all(
+    order.map(async (key) => {
+        const entries = await getCollection(key);
+        const items = entries
+            .map((entry) => ({
+                title: entry.data.title,
+                date: formatDate(entry.data.date),
+                href: `/${key}/${entry.slug}`,
+            }))
+            .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+        return {
+            label: `/${key}`,
+            href: `/${key}`,
+            items,
+        };
+    })
+);
+
+const crumbs = [{ label: "~/", href: "/" }];
+---
+
+<BaseLayout title={SITE_DOMAIN}>
+    <PageFrame>
+        <Breadcrumbs items={crumbs} />
+        <Hero
+            name={NAME}
+            githubUser={GITHUB_USER}
+            affiliation={affiliation}
+            bio={bio}
+        />
+        <SearchInput id="title-search" placeholder="Search titles" />
+        {sections.map((section) => (
+            <ListSection
+                title={section.label}
+                titleHref={section.href}
+                items={section.items}
+                emptyMessage="No markdown yet."
+            />
+        ))}
+    </PageFrame>
+</BaseLayout>
+
+<script is:inline>
+    const input = document.querySelector("#title-search");
+    const sections = document.querySelectorAll("[data-section]");
+
+    const filterItems = () => {
+        const query = input.value.trim().toLowerCase();
+        sections.forEach((section) => {
+            const cards = section.querySelectorAll("[data-title]");
+            let visibleCount = 0;
+            cards.forEach((card) => {
+                const title = card.getAttribute("data-title") || "";
+                const match = title.toLowerCase().includes(query);
+                card.style.display = match ? "" : "none";
+                if (match) visibleCount += 1;
+            });
+            const empty = section.querySelector("[data-empty]");
+            if (empty) {
+                empty.style.display = visibleCount === 0 ? "" : "none";
+            }
+        });
+    };
+
+    if (input) {
+        input.addEventListener("input", filterItems);
+    }
+</script>

@@ -1,0 +1,84 @@
+---
+const {
+  id = "title-search",
+  placeholder = "Search titles",
+  label = "",
+} = Astro.props;
+import { Search } from "@lucide/astro";
+---
+
+<label class="search">
+  {label ? <span>{label}</span> : null}
+  <div class="field">
+    <Search class="icon" size={16} stroke-width={1.5} aria-hidden="true" />
+    <input id={id} type="search" placeholder={placeholder} />
+  </div>
+</label>
+
+<style>
+  .search {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    color: #5b5b5b;
+    max-width: 360px;
+  }
+
+    .field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid transparent;
+        padding: 6px 0;
+    }
+
+    .field:hover {
+        border-bottom: 1px solid #5b5b5b;
+    }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    flex-shrink: 0;
+  }
+
+  .search input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 14px;
+    color: #5b5b5b;
+    box-shadow: none;
+  }
+
+  .search input::placeholder {
+    color: #5b5b5b;
+  }
+
+  .search input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .search input:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+    .field:focus-within {
+        border-bottom: 1px solid #5b5b5b;
+        box-shadow: none;
+    }
+
+  .search input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><path d='M2 2 L8 8 M8 2 L2 8' stroke='%235b5b5b' stroke-width='1.2' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px 10px;
+    opacity: 0.7;
+  }
+</style>

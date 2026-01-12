@@ -1,0 +1,81 @@
+---
+const { name = "", githubUser = "", affiliation = {}, bio = "" } = Astro.props;
+---
+
+<section class="hero">
+    <div>
+        <div class="title-row">
+            <h1>
+                <a
+                    href={`https://github.com/${githubUser}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="name-link"
+                >
+                    {name}
+                </a>
+            </h1>
+        </div>
+        <p class="muted">
+            {affiliation.label} |
+            <a href={affiliation.companyUrl} target="_blank" class="company-link">{affiliation.companyName}</a
+            ><span class="suffix">{affiliation.suffix}</span>
+        </p>
+        <p class="bio">{bio}</p>
+    </div>
+</section>
+
+<style>
+    .hero {
+        display: grid;
+        gap: 16px;
+    }
+
+    .title-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero h1 {
+        font-size: clamp(26px, 4vw, 38px);
+        letter-spacing: 0.015em;
+    }
+
+    .name-link {
+        color: #2d5aa6;
+        text-decoration: none;
+    }
+
+    .name-link:hover {
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+    }
+
+    .muted {
+        color: #3f3f3f;
+    }
+
+    .company-link {
+        color: #1c1c1c;
+        text-decoration: none;
+    }
+
+    .company-link:hover {
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+    }
+
+    .suffix {
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+    .bio {
+        margin-top: 12px;
+        color: #2c2c2c;
+        line-height: 1.8;
+    }
+</style>

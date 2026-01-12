@@ -1,0 +1,59 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ListSection from "../../components/ListSection.astro";
+import PageFrame from "../../components/PageFrame.astro";
+import SearchInput from "../../components/SearchInput.astro";
+import { SITE_DOMAIN } from "../../lib/constant";
+
+const formatDate = (date) =>
+    date instanceof Date ? date.toISOString().slice(0, 10) : "";
+
+const entries = await getCollection("tech");
+const items = entries
+    .map((entry) => ({
+        title: entry.data.title,
+        date: formatDate(entry.data.date),
+        href: `/tech/${entry.slug}`,
+    }))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+const crumbs = [
+    { label: "~", href: "/" },
+    { label: "tech", href: "/tech" },
+];
+---
+
+<BaseLayout title={`tech | ${SITE_DOMAIN}`}>
+    <PageFrame>
+        <Breadcrumbs items={crumbs} />
+        <SearchInput id="section-search" placeholder="Search titles" />
+        <ListSection title="/tech" items={items} emptyMessage="No markdown yet." />
+    </PageFrame>
+</BaseLayout>
+
+<script is:inline>
+    const input = document.querySelector("#section-search");
+    const section = document.querySelector("[data-section]");
+
+    const filterItems = () => {
+        const query = input.value.trim().toLowerCase();
+        const cards = section.querySelectorAll("[data-title]");
+        let visibleCount = 0;
+        cards.forEach((card) => {
+            const title = card.getAttribute("data-title") || "";
+            const match = title.toLowerCase().includes(query);
+            card.style.display = match ? "" : "none";
+            if (match) visibleCount += 1;
+        });
+        const empty = section.querySelector("[data-empty]");
+        if (empty) {
+            empty.style.display = visibleCount === 0 ? "" : "none";
+        }
+    };
+
+    if (input) {
+        input.addEventListener("input", filterItems);
+    }
+</script>

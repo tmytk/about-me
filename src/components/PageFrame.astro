@@ -1,0 +1,23 @@
+<div class="page">
+    <div class="frame">
+        <slot />
+    </div>
+</div>
+
+<style>
+    .page {
+        min-height: 100vh;
+        background: #fffdfa;
+        color: #1c1c1c;
+        font-family: "Yu Mincho", "Hiragino Mincho ProN", "YuMincho",
+            "Hiragino Mincho Pro", "Noto Serif JP", "Times New Roman", serif;
+    }
+
+    .frame {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 40px 20px 64px;
+        display: grid;
+        gap: 28px;
+    }
+</style>
