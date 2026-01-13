@@ -4,19 +4,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import PageFrame from "../../components/PageFrame.astro";
 import SearchInput from "../../components/SearchInput.astro";
+import SearchFilter from "../../components/SearchFilter.astro";
 import TreeList from "../../components/TreeList.astro";
 import { SITE_DOMAIN } from "../../lib/constant";
 import { buildListing } from "../../lib/tree";
+import { SECTIONS } from "../../lib/sections";
 
 export const getStaticPaths = async () => [
-  { params: { section: "tech" } },
-  { params: { section: "random" } },
-  { params: { section: "music" } },
+  ...SECTIONS.map((section) => ({ params: { section } })),
 ];
 
 const { section } = Astro.params;
-const allowed = ["tech", "random", "music"];
-if (!allowed.includes(section)) {
+if (!SECTIONS.includes(section)) {
     throw new Error("Not found");
 }
 
@@ -33,33 +32,7 @@ const crumbs = [
     <PageFrame>
         <Breadcrumbs items={crumbs} />
         <SearchInput id="section-search" placeholder="Search titles" />
+        <SearchFilter />
         <TreeList items={items} emptyMessage="No markdown yet." showDesc={false} />
     </PageFrame>
 </BaseLayout>
-
-<script is:inline>
-    const input = document.querySelector("#section-search");
-    const sections = document.querySelectorAll("[data-section]");
-
-    const filterItems = () => {
-        const query = input.value.trim().toLowerCase();
-        sections.forEach((section) => {
-            const cards = section.querySelectorAll("[data-title]");
-            let visibleCount = 0;
-            cards.forEach((card) => {
-                const title = card.getAttribute("data-title") || "";
-                const match = title.toLowerCase().includes(query);
-                card.style.display = match ? "" : "none";
-                if (match) visibleCount += 1;
-            });
-            const empty = section.querySelector("[data-empty]");
-            if (empty) {
-                empty.style.display = visibleCount === 0 ? "" : "none";
-            }
-        });
-    };
-
-    if (input) {
-        input.addEventListener("input", filterItems);
-    }
-</script>

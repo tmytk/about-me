@@ -5,15 +5,16 @@ import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import MarkdownContent from "../../components/MarkdownContent.astro";
 import PageFrame from "../../components/PageFrame.astro";
 import SearchInput from "../../components/SearchInput.astro";
+import SearchFilter from "../../components/SearchFilter.astro";
 import TreeList from "../../components/TreeList.astro";
 import { SITE_DOMAIN } from "../../lib/constant";
 import { buildListing } from "../../lib/tree";
+import { SECTIONS } from "../../lib/sections";
 
 export const getStaticPaths = async () => {
-    const sections = ["tech", "random", "music"];
     const paths = [];
 
-    for (const section of sections) {
+    for (const section of SECTIONS) {
         const entries = await getCollection(section);
         const folderSet = new Set();
         for (const entry of entries) {
@@ -33,8 +34,7 @@ export const getStaticPaths = async () => {
 };
 
 const { section, slug } = Astro.params;
-const allowed = ["tech", "random", "music"];
-if (!allowed.includes(section)) {
+if (!SECTIONS.includes(section)) {
     throw new Error("Not found");
 }
 
@@ -89,39 +89,9 @@ if (!entry) {
         ) : (
             <>
                 <SearchInput id="section-search" placeholder="Search titles" />
+                <SearchFilter />
                 <TreeList items={items} emptyMessage="No markdown yet." showDesc={false} />
             </>
         )}
     </PageFrame>
 </BaseLayout>
-
-{entry ? null : (
-    <script is:inline>
-        {`
-        const input = document.querySelector("#section-search");
-        const sections = document.querySelectorAll("[data-section]");
-
-        const filterItems = () => {
-            const query = input.value.trim().toLowerCase();
-            sections.forEach((section) => {
-                const cards = section.querySelectorAll("[data-title]");
-                let visibleCount = 0;
-                cards.forEach((card) => {
-                    const title = card.getAttribute("data-title") || "";
-                    const match = title.toLowerCase().includes(query);
-                    card.style.display = match ? "" : "none";
-                    if (match) visibleCount += 1;
-                });
-                const empty = section.querySelector("[data-empty]");
-                if (empty) {
-                    empty.style.display = visibleCount === 0 ? "" : "none";
-                }
-            });
-        };
-
-        if (input) {
-            input.addEventListener("input", filterItems);
-        }
-        `}
-    </script>
-)}

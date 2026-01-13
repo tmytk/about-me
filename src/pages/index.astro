@@ -6,8 +6,10 @@ import Hero from "../components/Hero.astro";
 import TreeList from "../components/TreeList.astro";
 import PageFrame from "../components/PageFrame.astro";
 import SearchInput from "../components/SearchInput.astro";
+import SearchFilter from "../components/SearchFilter.astro";
 import { GITHUB_USER, NAME, SITE_DOMAIN } from "../lib/constant";
 import { buildListing } from "../lib/tree";
+import { SECTIONS } from "../lib/sections";
 
 const affiliation = {
     label: "千葉大学 B3",
@@ -19,9 +21,8 @@ const affiliation = {
 const bio =
     "RustとTypeScriptが好きな大学生です。アルゴリズム高速化や機械学習、ゲームAIに興味があります。趣味は漫画と音楽です。";
 
-const order = ["tech", "random", "music"];
 const sections = await Promise.all(
-    order.map(async (key) => {
+    SECTIONS.map(async (key) => {
         const entries = await getCollection(key);
         const items = buildListing(entries, `/${key}`);
 
@@ -46,6 +47,7 @@ const crumbs = [{ label: "~/", href: "/" }];
             bio={bio}
         />
         <SearchInput id="title-search" placeholder="Search titles" />
+        <SearchFilter inputId="#title-search" />
         {sections.map((section) => (
             <TreeList
                 title={section.label}
@@ -55,30 +57,3 @@ const crumbs = [{ label: "~/", href: "/" }];
         ))}
     </PageFrame>
 </BaseLayout>
-
-<script is:inline>
-    const input = document.querySelector("#title-search");
-    const sections = document.querySelectorAll("[data-section]");
-
-    const filterItems = () => {
-        const query = input.value.trim().toLowerCase();
-        sections.forEach((section) => {
-            const cards = section.querySelectorAll("[data-title]");
-            let visibleCount = 0;
-            cards.forEach((card) => {
-                const title = card.getAttribute("data-title") || "";
-                const match = title.toLowerCase().includes(query);
-                card.style.display = match ? "" : "none";
-                if (match) visibleCount += 1;
-            });
-            const empty = section.querySelector("[data-empty]");
-            if (empty) {
-                empty.style.display = visibleCount === 0 ? "" : "none";
-            }
-        });
-    };
-
-    if (input) {
-        input.addEventListener("input", filterItems);
-    }
-</script>

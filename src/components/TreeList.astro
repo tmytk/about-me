@@ -23,6 +23,7 @@ const hasItems = items.length > 0;
               class={`card${item.isFolder ? " folder" : ""}`}
               href={item.href}
               data-title={item.title}
+              data-group={item.href}
             >
               <div class="item">
                 {!item.isFolder ? (
@@ -46,6 +47,7 @@ const hasItems = items.length > 0;
                     class={`card child${child.isFolder ? " folder" : ""}`}
                     href={child.href}
                     data-title={child.title}
+                    data-parent={item.href}
                   >
                     <div class="item">
                       {!child.isFolder ? (

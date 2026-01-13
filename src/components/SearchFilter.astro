@@ -1,0 +1,52 @@
+---
+const { inputId = "#section-search", scope = "[data-section]" } = Astro.props;
+const inputSelector = JSON.stringify(inputId);
+const scopeSelector = JSON.stringify(scope);
+---
+
+<script is:inline>
+  {`
+  const input = document.querySelector(${inputSelector});
+  const sections = document.querySelectorAll(${scopeSelector});
+
+  const filterItems = () => {
+    if (!input) return;
+    const query = input.value.trim().toLowerCase();
+    sections.forEach((section) => {
+      const cards = Array.from(section.querySelectorAll("[data-title]"));
+      const matches = new Map();
+      cards.forEach((card) => {
+        const title = card.getAttribute("data-title") || "";
+        const match = title.toLowerCase().includes(query);
+        matches.set(card, match);
+      });
+
+      cards.forEach((card) => {
+        const group = card.getAttribute("data-group");
+        if (!group) return;
+        const hasChildMatch = cards.some(
+          (child) =>
+            child.getAttribute("data-parent") === group && matches.get(child)
+        );
+        if (hasChildMatch) {
+          matches.set(card, true);
+        }
+      });
+
+      let visibleCount = 0;
+      matches.forEach((match, card) => {
+        card.style.display = match ? "" : "none";
+        if (match) visibleCount += 1;
+      });
+      const empty = section.querySelector("[data-empty]");
+      if (empty) {
+        empty.style.display = visibleCount === 0 ? "" : "none";
+      }
+    });
+  };
+
+  if (input) {
+    input.addEventListener("input", filterItems);
+  }
+  `}
+</script>

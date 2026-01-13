@@ -24,17 +24,17 @@ import { Search } from "@lucide/astro";
     max-width: 360px;
   }
 
-    .field {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border-bottom: 1px solid transparent;
-        padding: 6px 0;
-    }
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid transparent;
+    padding: 6px 0;
+  }
 
-    .field:hover {
-        border-bottom: 1px solid #5b5b5b;
-    }
+  .field:hover {
+    border-bottom: 1px solid #5b5b5b;
+  }
 
   .icon {
     width: 16px;
@@ -50,6 +50,9 @@ import { Search } from "@lucide/astro";
     font-size: 14px;
     color: #5b5b5b;
     box-shadow: none;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
   }
 
   .search input::placeholder {
@@ -66,10 +69,10 @@ import { Search } from "@lucide/astro";
     box-shadow: none;
   }
 
-    .field:focus-within {
-        border-bottom: 1px solid #5b5b5b;
-        box-shadow: none;
-    }
+  .field:focus-within {
+    border-bottom: 1px solid #5b5b5b;
+    box-shadow: none;
+  }
 
   .search input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;
