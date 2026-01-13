@@ -3,10 +3,11 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import Hero from "../components/Hero.astro";
-import ListSection from "../components/ListSection.astro";
+import TreeList from "../components/TreeList.astro";
 import PageFrame from "../components/PageFrame.astro";
 import SearchInput from "../components/SearchInput.astro";
 import { GITHUB_USER, NAME, SITE_DOMAIN } from "../lib/constant";
+import { buildListing } from "../lib/tree";
 
 const affiliation = {
     label: "千葉大学 B3",
@@ -18,20 +19,11 @@ const affiliation = {
 const bio =
     "RustとTypeScriptが好きな大学生です。アルゴリズム高速化や機械学習、ゲームAIに興味があります。趣味は漫画と音楽です。";
 
-const formatDate = (date) =>
-    date instanceof Date ? date.toISOString().slice(0, 10) : "";
-
 const order = ["tech", "random", "music"];
 const sections = await Promise.all(
     order.map(async (key) => {
         const entries = await getCollection(key);
-        const items = entries
-            .map((entry) => ({
-                title: entry.data.title,
-                date: formatDate(entry.data.date),
-                href: `/${key}/${entry.slug}`,
-            }))
-            .sort((a, b) => (a.date < b.date ? 1 : -1));
+        const items = buildListing(entries, `/${key}`);
 
         return {
             label: `/${key}`,
@@ -55,11 +47,10 @@ const crumbs = [{ label: "~/", href: "/" }];
         />
         <SearchInput id="title-search" placeholder="Search titles" />
         {sections.map((section) => (
-            <ListSection
+            <TreeList
                 title={section.label}
                 titleHref={section.href}
                 items={section.items}
-                emptyMessage="No markdown yet."
             />
         ))}
     </PageFrame>
