@@ -5,7 +5,8 @@ const scopeSelector = JSON.stringify(scope);
 ---
 
 <script is:inline>
-  {`
+  {
+    `
   const input = document.querySelector(${inputSelector});
   const sections = document.querySelectorAll(${scopeSelector});
 
@@ -48,5 +49,6 @@ const scopeSelector = JSON.stringify(scope);
   if (input) {
     input.addEventListener("input", filterItems);
   }
-  `}
+  `;
+  }
 </script>
