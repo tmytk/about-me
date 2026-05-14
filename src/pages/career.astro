@@ -3,7 +3,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PageFrame from "../components/PageFrame.astro";
 import { SITE_DOMAIN } from "../lib/constant";
 
-const careers = [
+type CareerItem = {
+    period: string;
+    title: string;
+    note: string;
+};
+
+const careers: CareerItem[] = [
     {
         period: "現在",
         title: "千葉大学",

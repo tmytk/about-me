@@ -2,14 +2,23 @@
 import { SITE_DOMAIN } from "../lib/constant";
 import { getSectionLabel, SECTIONS } from "../lib/sections";
 
-const { narrow = false } = Astro.props;
+interface Props {
+  narrow?: boolean;
+}
+
+const { narrow = false }: Props = Astro.props;
 const currentPath = Astro.url.pathname;
+type NavItem = {
+  href: string;
+  label: string;
+  active: boolean;
+};
 const sectionNavItems = SECTIONS.map((key) => ({
-  href: `/${key}`,
-  label: getSectionLabel(key),
-  active: currentPath === `/${key}` || currentPath.startsWith(`/${key}/`),
+    href: `/${key}`,
+    label: getSectionLabel(key),
+    active: currentPath === `/${key}` || currentPath.startsWith(`/${key}/`),
 }));
-const navItems = [
+const navItems: NavItem[] = [
   {
     href: "/career",
     label: "Career",
@@ -24,7 +33,7 @@ const navItems = [
 >
   <header class="bg-paper" aria-label="Site header">
     <div
-      class="flex items-center justify-between gap-[18px] border-b border-line pt-3 pb-3 max-[700px]:flex-wrap max-[700px]:gap-2 max-[700px]:pt-3"
+      class="flex items-center justify-between gap-4.5 border-b border-line pt-3 pb-3 max-[700px]:flex-wrap max-[700px]:gap-2 max-[700px]:pt-3"
     >
       <a
         class="inline-flex min-w-0 items-center text-ink no-underline"
@@ -44,7 +53,7 @@ const navItems = [
           navItems.map((item) => (
             <a
               class:list={[
-                "inline-flex min-h-[34px] items-center rounded-lg px-2 text-sm text-muted no-underline transition-colors hover:text-blue-deep max-[700px]:justify-center max-[700px]:px-1.5",
+                "inline-flex min-h-8.5 items-center rounded-lg px-2 text-sm text-muted no-underline transition-colors hover:text-blue-deep max-[700px]:justify-center max-[700px]:px-1.5",
                 item.active && "text-blue-deep",
               ]}
               href={item.href}
@@ -58,8 +67,8 @@ const navItems = [
   </header>
   <main
     class:list={[
-      "grid gap-[42px] px-4 pt-[22px] pb-[72px] max-[700px]:gap-[30px] max-[700px]:px-3 max-[700px]:pt-3",
-      narrow && "mx-auto max-w-[820px]",
+      "grid gap-10.5 px-4 pt-5.5 pb-18 max-[700px]:gap-7.5 max-[700px]:px-3 max-[700px]:pt-3",
+      narrow && "mx-auto max-w-205",
     ]}
   >
     <slot />

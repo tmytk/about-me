@@ -6,6 +6,29 @@ import SearchInput from "../components/SearchInput.astro";
 import SearchFilter from "../components/SearchFilter.astro";
 import { SITE_DOMAIN } from "../lib/constant";
 import { getSectionLabel, SECTIONS } from "../lib/sections";
+import type { SectionKey } from "../lib/sections";
+
+type MemoEntry = {
+    slug: string;
+    data: {
+        title: string;
+        date: Date;
+    };
+};
+
+type MemoIndexItem = {
+    section: SectionKey;
+    entry: MemoEntry;
+    href: string;
+    label: string;
+};
+
+type CategoryItem = {
+    section: SectionKey;
+    href: string;
+    label: string;
+    count: number;
+};
 
 const formatDate = (date: Date | undefined) =>
     date instanceof Date ? date.toISOString().slice(0, 10).replaceAll("-", ".") : "";
@@ -17,7 +40,7 @@ const collections = await Promise.all(
     }))
 );
 
-const memoItems = collections
+const memoItems: MemoIndexItem[] = collections
     .flatMap(({ section, entries }) =>
         entries.map((entry) => ({
             section,
@@ -32,7 +55,7 @@ const memoItems = collections
             (a.entry.data.date?.getTime?.() ?? 0)
     );
 
-const categoryItems = collections.map(({ section, entries }) => ({
+const categoryItems: CategoryItem[] = collections.map(({ section, entries }) => ({
     section,
     href: `/${section}`,
     label: getSectionLabel(section),

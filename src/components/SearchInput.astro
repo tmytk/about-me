@@ -1,9 +1,15 @@
 ---
+interface Props {
+  id?: string;
+  placeholder?: string;
+  label?: string;
+}
+
 const {
     id = "title-search",
     placeholder = "Search titles",
     label = "",
-} = Astro.props;
+}: Props = Astro.props;
 import { Search } from "@lucide/astro";
 ---
 

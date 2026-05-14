@@ -2,10 +2,15 @@
 import "../styles/global.css";
 import { SITE_DOMAIN } from "../lib/constant";
 
+interface Props {
+    title?: string;
+    description?: string;
+}
+
 const {
     title = SITE_DOMAIN,
     description = "Tomoya Takahashiのポートフォリオ。Web、アルゴリズム、機械学習、ゲームAIに関する制作物とメモを掲載しています。",
-} = Astro.props;
+}: Props = Astro.props;
 ---
 
 <!doctype html>

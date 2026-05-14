@@ -1,18 +1,40 @@
 ---
-const { items = [] } = Astro.props;
+type BreadcrumbItem = {
+  label: string;
+  href?: string;
+};
+
+interface Props {
+  items?: BreadcrumbItem[];
+}
+
+const { items = [] }: Props = Astro.props;
 ---
 
 <nav aria-label="Breadcrumb">
-    <ol class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm font-normal text-muted">
-        {items.map((item, i) => (
-            <li class="inline-flex items-center gap-1.5">
-                {item.href ? (
-                    <a class="inline-flex min-h-[30px] items-center text-blue-deep no-underline hover:underline" href={item.href}>{item.label}</a>
-                ) : (
-                    <span class="inline-flex min-h-[30px] items-center">{item.label}</span>
-                )}
-                {i < items.length - 1 ? <span class="text-[#9eabc0]" aria-hidden="true">/</span> : null}
-            </li>
-        ))}
-    </ol>
+  <ol
+    class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm font-normal text-muted"
+  >
+    {
+      items.map((item, i) => (
+        <li class="inline-flex items-center gap-1.5">
+          {item.href ? (
+            <a
+              class="inline-flex min-h-7.5 items-center text-blue-deep no-underline hover:underline"
+              href={item.href}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <span class="inline-flex min-h-7.5 items-center">{item.label}</span>
+          )}
+          {i < items.length - 1 ? (
+            <span class="text-[#9eabc0]" aria-hidden="true">
+              /
+            </span>
+          ) : null}
+        </li>
+      ))
+    }
+  </ol>
 </nav>
