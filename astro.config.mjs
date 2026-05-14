@@ -4,13 +4,18 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import tailwindcss from '@tailwindcss/vite'
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
-	markdown: {
-		remarkPlugins: [remarkMath],
-		rehypePlugins: [rehypeKatex],
+  markdown: {
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
 	},
-	vite: {
-		plugins: [tailwindcss()],
+
+  vite: {
+      plugins: [tailwindcss()],
 	},
+
+  adapter: cloudflare()
 });

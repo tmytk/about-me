@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageFrame from "../components/PageFrame.astro";
 import { SITE_DOMAIN } from "../lib/constant";
@@ -7,7 +8,7 @@ import { getSectionLabel, SECTIONS } from "../lib/sections";
 import type { SectionKey } from "../lib/sections";
 
 type MemoEntry = {
-  slug: string;
+  id: string;
   data: {
     title: string;
     date: Date;
@@ -37,8 +38,8 @@ const memoItems: MemoIndexItem[] = collections
   .flatMap(({ section, entries }) =>
     entries.map((entry) => ({
       section,
-      entry,
-      href: `/${section}/${entry.slug}`,
+      entry: entry as CollectionEntry<typeof section> & MemoEntry,
+      href: `/${section}/${entry.id}`,
       label: getSectionLabel(section),
     })),
   )

@@ -13,7 +13,7 @@ const extractExcerpt = (body: string) => {
 };
 
 type Entry = {
-    slug: string;
+    id: string;
     data: {
         title: string;
         date?: Date;
@@ -33,7 +33,7 @@ export const buildMemoItems = (entries: Entry[], basePath: string): MemoItem[] =
         .map((item) => ({
             title: item.data.title,
             date: formatDate(item.data.date),
-            href: `${basePath}/${item.slug}`,
+            href: `${basePath}/${item.id}`,
             desc: extractExcerpt(item.body || ""),
         }))
         .sort((a, b) => (a.date && b.date && a.date < b.date ? 1 : -1));

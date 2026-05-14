@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import MarkdownContent from "../../components/MarkdownContent.astro";
@@ -13,7 +13,7 @@ export const getStaticPaths = async () => {
   for (const section of SECTIONS) {
     const entries = await getCollection(section);
     for (const entry of entries) {
-      paths.push({ params: { section, slug: entry.slug }, props: { entry } });
+      paths.push({ params: { section, slug: entry.id }, props: { entry } });
     }
   }
 
@@ -28,7 +28,7 @@ const formatDate = (date: Date | undefined) =>
 const { entry } = Astro.props;
 const section = entry.collection;
 const sectionLabel = getSectionLabel(section);
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 const crumbs = [
   { label: "Home", href: "/" },
   { label: sectionLabel, href: `/${section}` },
