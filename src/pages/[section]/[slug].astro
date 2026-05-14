@@ -8,47 +8,61 @@ import { SITE_DOMAIN } from "../../lib/constant";
 import { getSectionLabel, SECTIONS } from "../../lib/sections";
 
 export const getStaticPaths = async () => {
-    const paths = [];
+  const paths = [];
 
-    for (const section of SECTIONS) {
-        const entries = await getCollection(section);
-        for (const entry of entries) {
-            paths.push({ params: { section, slug: entry.slug }, props: { entry } });
-        }
+  for (const section of SECTIONS) {
+    const entries = await getCollection(section);
+    for (const entry of entries) {
+      paths.push({ params: { section, slug: entry.slug }, props: { entry } });
     }
+  }
 
-    return paths;
+  return paths;
 };
 
 const formatDate = (date: Date | undefined) =>
-    date instanceof Date ? date.toISOString().slice(0, 10).replaceAll("-", ".") : "";
+  date instanceof Date
+    ? date.toISOString().slice(0, 10).replaceAll("-", ".")
+    : "";
 
 const { entry } = Astro.props;
 const section = entry.collection;
 const sectionLabel = getSectionLabel(section);
 const { Content } = await entry.render();
 const crumbs = [
-    { label: "Home", href: "/" },
-    { label: sectionLabel, href: `/${section}` },
-    { label: entry.data.title },
+  { label: "Home", href: "/" },
+  { label: sectionLabel, href: `/${section}` },
+  { label: entry.data.title },
 ];
 ---
 
 <BaseLayout
-    title={`${entry.data.title} | ${SITE_DOMAIN}`}
-    description={entry.data.title}
+  title={`${entry.data.title} | ${SITE_DOMAIN}`}
+  description={entry.data.title}
 >
-    <PageFrame narrow>
-        <Breadcrumbs items={crumbs} />
-        <article class="grid gap-[26px]">
-            <header class="grid gap-2.5 border-b border-line pb-6">
-                <p class="m-0 text-xs font-normal uppercase tracking-[0.08em] text-blue-deep">{sectionLabel}</p>
-                <h1 class="m-0 text-[clamp(26px,4vw,34px)] font-normal leading-[1.25] tracking-[-0.02em] text-blue-deep">{entry.data.title}</h1>
-                <time class="text-[15px] text-muted" datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
-            </header>
-            <MarkdownContent>
-                <Content />
-            </MarkdownContent>
-        </article>
-    </PageFrame>
+  <PageFrame narrow>
+    <Breadcrumbs items={crumbs} />
+    <article class="grid gap-6.5">
+      <header class="grid gap-2.5 border-b border-line pb-6">
+        <p
+          class="m-0 text-xs font-normal uppercase tracking-[0.08em] text-blue-deep"
+        >
+          {sectionLabel}
+        </p>
+        <h1
+          class="m-0 text-[clamp(26px,4vw,34px)] font-normal leading-tight tracking-[-0.02em] text-blue-deep"
+        >
+          {entry.data.title}
+        </h1>
+        <time
+          class="text-[15px] text-muted"
+          datetime={entry.data.date.toISOString()}
+          >{formatDate(entry.data.date)}</time
+        >
+      </header>
+      <MarkdownContent>
+        <Content />
+      </MarkdownContent>
+    </article>
+  </PageFrame>
 </BaseLayout>

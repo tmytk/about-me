@@ -19,7 +19,7 @@ const {
 const hasItems = items.length > 0;
 ---
 
-<section class="grid gap-4" data-section>
+<section class="grid gap-4">
   {
     title ? (
       <header>
@@ -45,7 +45,6 @@ const hasItems = items.length > 0;
             <a
               class="grid grid-cols-[112px_minmax(0,1fr)] gap-4.5 border-b border-line py-3.5 text-ink no-underline hover:[&_h3]:text-blue max-sm:grid-cols-1 max-sm:gap-1"
               href={item.href}
-              data-title={item.title}
             >
               <time class="text-[13px] text-muted">{item.date}</time>
               <div>
@@ -64,7 +63,6 @@ const hasItems = items.length > 0;
     }
     <p
       class="m-0 py-3.5 text-muted hidden:[display:none]"
-      data-empty
       hidden={hasItems}
     >
       {emptyMessage}

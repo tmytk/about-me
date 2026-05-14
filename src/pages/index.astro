@@ -2,92 +2,82 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageFrame from "../components/PageFrame.astro";
-import SearchInput from "../components/SearchInput.astro";
-import SearchFilter from "../components/SearchFilter.astro";
 import { SITE_DOMAIN } from "../lib/constant";
 import { getSectionLabel, SECTIONS } from "../lib/sections";
 import type { SectionKey } from "../lib/sections";
 
 type MemoEntry = {
-    slug: string;
-    data: {
-        title: string;
-        date: Date;
-    };
+  slug: string;
+  data: {
+    title: string;
+    date: Date;
+  };
 };
 
 type MemoIndexItem = {
-    section: SectionKey;
-    entry: MemoEntry;
-    href: string;
-    label: string;
-};
-
-type CategoryItem = {
-    section: SectionKey;
-    href: string;
-    label: string;
-    count: number;
+  section: SectionKey;
+  entry: MemoEntry;
+  href: string;
+  label: string;
 };
 
 const formatDate = (date: Date | undefined) =>
-    date instanceof Date ? date.toISOString().slice(0, 10).replaceAll("-", ".") : "";
+  date instanceof Date
+    ? date.toISOString().slice(0, 10).replaceAll("-", ".")
+    : "";
 
 const collections = await Promise.all(
-    SECTIONS.map(async (section) => ({
-        section,
-        entries: await getCollection(section),
-    }))
+  SECTIONS.map(async (section) => ({
+    section,
+    entries: await getCollection(section),
+  })),
 );
 
 const memoItems: MemoIndexItem[] = collections
-    .flatMap(({ section, entries }) =>
-        entries.map((entry) => ({
-            section,
-            entry,
-            href: `/${section}/${entry.slug}`,
-            label: getSectionLabel(section),
-        }))
-    )
-    .sort(
-        (a, b) =>
-            (b.entry.data.date?.getTime?.() ?? 0) -
-            (a.entry.data.date?.getTime?.() ?? 0)
-    );
-
-const categoryItems: CategoryItem[] = collections.map(({ section, entries }) => ({
-    section,
-    href: `/${section}`,
-    label: getSectionLabel(section),
-    count: entries.length,
-}));
+  .flatMap(({ section, entries }) =>
+    entries.map((entry) => ({
+      section,
+      entry,
+      href: `/${section}/${entry.slug}`,
+      label: getSectionLabel(section),
+    })),
+  )
+  .sort(
+    (a, b) =>
+      (b.entry.data.date?.getTime?.() ?? 0) -
+      (a.entry.data.date?.getTime?.() ?? 0),
+  );
 ---
 
-<BaseLayout title={`Memo | ${SITE_DOMAIN}`} description="技術メモ、日々のメモ、音楽ログの一覧。">
-    <PageFrame narrow>
-        <section class="grid gap-6 p-0" aria-label="Memo index">
-            <nav class="grid grid-cols-3 gap-3 max-[720px]:hidden" aria-label="Memo categories">
-                {categoryItems.map((item) => (
-                    <a class="grid gap-1.5 py-3.5 text-inherit no-underline hover:[&_span]:text-blue" href={item.href}>
-                        <span class="text-lg font-normal leading-[1.3] text-blue-deep">{item.label}</span>
-                        <small class="text-[13px] font-normal text-muted">{item.count} md</small>
-                    </a>
-                ))}
-            </nav>
-
-            <SearchInput id="memo-search" placeholder="メモを検索" />
-            <SearchFilter inputId="#memo-search" />
-
-            <section class="grid" data-section aria-label="All memos">
-                {memoItems.map(({ entry, href, label }) => (
-                    <a class="grid grid-cols-[112px_minmax(0,1fr)_84px] items-baseline gap-4 border-b border-line py-4 text-inherit no-underline hover:[&_strong]:text-blue max-[720px]:grid-cols-[auto_1fr] max-[720px]:gap-x-3 max-[720px]:gap-y-1" href={href} data-title={entry.data.title}>
-                        <time class="text-[13px] font-normal text-muted max-[720px]:col-start-1 max-[720px]:row-start-1" datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
-                        <strong class="overflow-hidden text-ellipsis whitespace-nowrap text-base font-normal text-ink max-[720px]:col-span-2 max-[720px]:row-start-2 max-[720px]:whitespace-normal">{entry.data.title}</strong>
-                        <span class="text-[13px] font-normal text-muted max-[720px]:col-start-2 max-[720px]:row-start-1">{label}</span>
-                    </a>
-                ))}
-                <p class="m-0 pt-[18px] text-muted" data-empty hidden>該当するメモがありません。</p>
-            </section>
-        </section>
-    </PageFrame>
+<BaseLayout
+  title={`Memo | ${SITE_DOMAIN}`}
+  description="技術メモ、日々のメモ、音楽ログの一覧。"
+>
+  <PageFrame narrow>
+    <section class="grid gap-6 p-0" aria-label="Memo index">
+      <section class="grid" aria-label="All memos">
+        {
+          memoItems.map(({ entry, href, label }) => (
+            <a
+              class="grid grid-cols-[112px_minmax(0,1fr)_84px] items-baseline gap-4 border-b border-line py-4 text-inherit no-underline hover:[&_strong]:text-blue max-[720px]:grid-cols-[auto_1fr] max-[720px]:gap-x-3 max-[720px]:gap-y-1"
+              href={href}
+            >
+              <time
+                class="text-[13px] font-normal text-muted max-[720px]:col-start-1 max-[720px]:row-start-1"
+                datetime={entry.data.date.toISOString()}
+              >
+                {formatDate(entry.data.date)}
+              </time>
+              <strong class="overflow-hidden text-ellipsis whitespace-nowrap text-base font-normal text-ink max-[720px]:col-span-2 max-[720px]:row-start-2 max-[720px]:whitespace-normal">
+                {entry.data.title}
+              </strong>
+              <span class="text-[13px] font-normal text-muted max-[720px]:col-start-2 max-[720px]:row-start-1">
+                {label}
+              </span>
+            </a>
+          ))
+        }
+      </section>
+    </section>
+  </PageFrame>
 </BaseLayout>

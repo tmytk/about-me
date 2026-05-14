@@ -3,44 +3,43 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import PageFrame from "../../components/PageFrame.astro";
-import SearchInput from "../../components/SearchInput.astro";
-import SearchFilter from "../../components/SearchFilter.astro";
 import MemoList from "../../components/MemoList.astro";
 import { SITE_DOMAIN } from "../../lib/constant";
 import { buildMemoItems } from "../../lib/memos";
 import { getSectionLabel, isSection, SECTIONS } from "../../lib/sections";
 
 export const getStaticPaths = async () =>
-    SECTIONS.map((section) => ({ params: { section } }));
+  SECTIONS.map((section) => ({ params: { section } }));
 
 const sectionParam = Astro.params.section;
 if (!isSection(sectionParam)) {
-    throw new Error("Not found");
+  throw new Error("Not found");
 }
 
 const section = sectionParam;
 const sectionLabel = getSectionLabel(section);
 const entries = await getCollection(section);
 const items = buildMemoItems(entries, `/${section}`);
-const crumbs = [
-    { label: "Home", href: "/" },
-    { label: sectionLabel },
-];
+const crumbs = [{ label: "Home", href: "/" }, { label: sectionLabel }];
 ---
 
 <BaseLayout title={`${sectionLabel} | ${SITE_DOMAIN}`}>
-    <PageFrame narrow>
-        <Breadcrumbs items={crumbs} />
-        <section class="grid gap-6 p-0" aria-labelledby="page-title">
-            <header class="grid gap-2.5">
-                <h1 class="m-0 text-[clamp(27px,4vw,34px)] font-normal leading-[1.25] tracking-[-0.02em] text-blue-deep" id="page-title">{sectionLabel}</h1>
-            </header>
-            <SearchInput
-                id="section-search"
-                placeholder={`${sectionLabel}を検索`}
-            />
-            <SearchFilter inputId="#section-search" />
-            <MemoList items={items} emptyMessage="まだ記事がありません。" showDesc={false} />
-        </section>
-    </PageFrame>
+  <PageFrame narrow>
+    <Breadcrumbs items={crumbs} />
+    <section class="grid gap-6 p-0" aria-labelledby="page-title">
+      <header class="grid gap-2.5">
+        <h1
+          class="m-0 text-[clamp(27px,4vw,34px)] font-normal leading-tight tracking-[-0.02em] text-blue-deep"
+          id="page-title"
+        >
+          {sectionLabel}
+        </h1>
+      </header>
+      <MemoList
+        items={items}
+        emptyMessage="まだ記事がありません。"
+        showDesc={false}
+      />
+    </section>
+  </PageFrame>
 </BaseLayout>
