@@ -2,80 +2,24 @@
 const { name = "", githubUser = "", affiliation = {}, bio = "" } = Astro.props;
 ---
 
-<section class="hero">
-    <div>
-        <div class="title-row">
-            <h1>
-                <a
-                    href={`https://github.com/${githubUser}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="name-link"
-                >
-                    {name}
+<section class="bg-transparent px-0 py-[clamp(28px,5vw,52px)]">
+    <p class="m-0 mb-3 text-xs font-normal uppercase tracking-[0.08em] text-blue-deep">Portfolio</p>
+    <h1 class="m-0 text-[clamp(30px,4vw,36px)] font-normal leading-[1.2] tracking-[-0.02em]">
+        <a class="text-ink no-underline hover:text-blue" href={`https://github.com/${githubUser}`} target="_blank" rel="noopener noreferrer">
+            {name}
+        </a>
+    </h1>
+    <p class="mt-[18px] mb-0 flex flex-wrap gap-2 text-muted">
+        {affiliation.label}
+        {affiliation.companyUrl ? (
+            <>
+                <span>/</span>
+                <a class="text-blue-deep no-underline hover:text-blue" href={affiliation.companyUrl} target="_blank" rel="noopener noreferrer">
+                    {affiliation.companyName}
                 </a>
-            </h1>
-        </div>
-        <p class="muted">
-            {affiliation.label} |
-            <a href={affiliation.companyUrl} target="_blank" class="company-link">{affiliation.companyName}</a
-            ><span class="suffix">{affiliation.suffix}</span>
-        </p>
-        <p class="bio">{bio}</p>
-    </div>
+            </>
+        ) : null}
+        {affiliation.suffix ? <span>{affiliation.suffix}</span> : null}
+    </p>
+    <p class="mt-5 mb-0 max-w-[680px] text-base leading-[1.85] text-ink-soft">{bio}</p>
 </section>
-
-<style>
-    .hero {
-        display: grid;
-        gap: 10px;
-    }
-
-    .title-row {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .hero h1 {
-        font-size: clamp(26px, 4vw, 38px);
-        letter-spacing: 0.015em;
-    }
-
-    .name-link {
-        color: #2d5aa6;
-        text-decoration: none;
-    }
-
-    .name-link:hover {
-        text-decoration: underline;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 2px;
-    }
-
-    .muted {
-        color: #3f3f3f;
-    }
-
-    .company-link {
-        color: #1c1c1c;
-        text-decoration: none;
-    }
-
-    .company-link:hover {
-        text-decoration: underline;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 2px;
-    }
-
-    .suffix {
-        text-decoration: none;
-        margin-left: 4px;
-    }
-
-    .bio {
-        margin-top: 12px;
-        color: #2c2c2c;
-        line-height: 1.8;
-    }
-</style>

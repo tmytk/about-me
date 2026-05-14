@@ -2,51 +2,17 @@
 const { items = [] } = Astro.props;
 ---
 
-<nav class="breadcrumbs" aria-label="Breadcrumb">
-    <ol>
+<nav aria-label="Breadcrumb">
+    <ol class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm font-normal text-muted">
         {items.map((item, i) => (
-            <li class="crumb">
-                {item.href ? <a href={item.href}>{item.label}</a> : <span>{item.label}</span>}
-                {i < items.length - 1 ? <span class="sep">/</span> : null}
+            <li class="inline-flex items-center gap-1.5">
+                {item.href ? (
+                    <a class="inline-flex min-h-[30px] items-center text-blue-deep no-underline hover:underline" href={item.href}>{item.label}</a>
+                ) : (
+                    <span class="inline-flex min-h-[30px] items-center">{item.label}</span>
+                )}
+                {i < items.length - 1 ? <span class="text-[#9eabc0]" aria-hidden="true">/</span> : null}
             </li>
         ))}
     </ol>
 </nav>
-
-<style>
-    .breadcrumbs ol {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0;
-        font-size: 14px;
-        color: #3d3d3d;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .breadcrumbs {
-        margin-bottom: 2px;
-    }
-
-    .breadcrumbs li {
-        display: inline-flex;
-        align-items: center;
-        gap: 0;
-    }
-
-    .breadcrumbs a {
-        color: #2d5aa6;
-        text-decoration: none;
-    }
-
-    .breadcrumbs a:hover {
-        text-decoration: underline;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 2px;
-    }
-
-    .sep {
-        color: #8a8a8a;
-    }
-</style>

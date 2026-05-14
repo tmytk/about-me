@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageFrame from "../components/PageFrame.astro";
+import { SITE_DOMAIN } from "../lib/constant";
+
+const careers = [
+    {
+        period: "現在",
+        title: "千葉大学",
+        note: "在学",
+    },
+    {
+        period: "2024.09 -",
+        title: "燈株式会社",
+        note: "インターン",
+    },
+    {
+        period: "2024.10",
+        title: "第34回 高専プロコン 競技部門 優勝",
+        note: "アルゴリズム・UI設計を担当",
+    },
+];
+---
+
+<BaseLayout title={`Career | ${SITE_DOMAIN}`} description="経歴の簡単な一覧。">
+    <PageFrame narrow>
+        <section class="grid gap-7" aria-label="Career">
+            <ol class="m-0 grid list-none p-0">
+                {careers.map((item) => (
+                    <li class="grid grid-cols-[112px_minmax(0,1fr)] gap-5 border-b border-line py-4 max-sm:grid-cols-1 max-sm:gap-1">
+                        <time class="text-sm text-muted">{item.period}</time>
+                        <div>
+                            <h2 class="m-0 text-base font-normal leading-[1.45] text-ink">{item.title}</h2>
+                            <p class="m-0 mt-1 text-sm text-muted">{item.note}</p>
+                        </div>
+                    </li>
+                ))}
+            </ol>
+        </section>
+    </PageFrame>
+</BaseLayout>

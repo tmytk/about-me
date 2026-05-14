@@ -1,59 +1,70 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Breadcrumbs from "../components/Breadcrumbs.astro";
-import Hero from "../components/Hero.astro";
-import TreeList from "../components/TreeList.astro";
 import PageFrame from "../components/PageFrame.astro";
 import SearchInput from "../components/SearchInput.astro";
 import SearchFilter from "../components/SearchFilter.astro";
-import { GITHUB_USER, NAME, SITE_DOMAIN } from "../lib/constant";
-import { buildListing } from "../lib/tree";
-import { SECTIONS } from "../lib/sections";
+import { SITE_DOMAIN } from "../lib/constant";
+import { getSectionLabel, SECTIONS } from "../lib/sections";
 
-const affiliation = {
-    label: "千葉大学 B3",
-    companyName: "燈株式会社",
-    companyUrl: "https://akariinc.co.jp/",
-    suffix: "インターン(2024/9/17〜)",
-};
+const formatDate = (date: Date | undefined) =>
+    date instanceof Date ? date.toISOString().slice(0, 10).replaceAll("-", ".") : "";
 
-const bio =
-    "RustとTypeScriptが好きな大学生です。アルゴリズム高速化や機械学習、ゲームAIに興味があります。趣味は漫画と音楽です。";
-
-const sections = await Promise.all(
-    SECTIONS.map(async (key) => {
-        const entries = await getCollection(key);
-        const items = buildListing(entries, `/${key}`);
-
-        return {
-            label: `/${key}`,
-            href: `/${key}`,
-            items,
-        };
-    })
+const collections = await Promise.all(
+    SECTIONS.map(async (section) => ({
+        section,
+        entries: await getCollection(section),
+    }))
 );
 
-const crumbs = [{ label: "~/", href: "/" }];
+const memoItems = collections
+    .flatMap(({ section, entries }) =>
+        entries.map((entry) => ({
+            section,
+            entry,
+            href: `/${section}/${entry.slug}`,
+            label: getSectionLabel(section),
+        }))
+    )
+    .sort(
+        (a, b) =>
+            (b.entry.data.date?.getTime?.() ?? 0) -
+            (a.entry.data.date?.getTime?.() ?? 0)
+    );
+
+const categoryItems = collections.map(({ section, entries }) => ({
+    section,
+    href: `/${section}`,
+    label: getSectionLabel(section),
+    count: entries.length,
+}));
 ---
 
-<BaseLayout title={SITE_DOMAIN}>
-    <PageFrame>
-        <Breadcrumbs items={crumbs} />
-        <Hero
-            name={NAME}
-            githubUser={GITHUB_USER}
-            affiliation={affiliation}
-            bio={bio}
-        />
-        <SearchInput id="title-search" placeholder="Search titles" />
-        <SearchFilter inputId="#title-search" />
-        {sections.map((section) => (
-            <TreeList
-                title={section.label}
-                titleHref={section.href}
-                items={section.items}
-            />
-        ))}
+<BaseLayout title={`Memo | ${SITE_DOMAIN}`} description="技術メモ、日々のメモ、音楽ログの一覧。">
+    <PageFrame narrow>
+        <section class="grid gap-6 p-0" aria-label="Memo index">
+            <nav class="grid grid-cols-3 gap-3 max-[720px]:hidden" aria-label="Memo categories">
+                {categoryItems.map((item) => (
+                    <a class="grid gap-1.5 py-3.5 text-inherit no-underline hover:[&_span]:text-blue" href={item.href}>
+                        <span class="text-lg font-normal leading-[1.3] text-blue-deep">{item.label}</span>
+                        <small class="text-[13px] font-normal text-muted">{item.count} md</small>
+                    </a>
+                ))}
+            </nav>
+
+            <SearchInput id="memo-search" placeholder="メモを検索" />
+            <SearchFilter inputId="#memo-search" />
+
+            <section class="grid" data-section aria-label="All memos">
+                {memoItems.map(({ entry, href, label }) => (
+                    <a class="grid grid-cols-[112px_minmax(0,1fr)_84px] items-baseline gap-4 border-b border-line py-4 text-inherit no-underline hover:[&_strong]:text-blue max-[720px]:grid-cols-[auto_1fr] max-[720px]:gap-x-3 max-[720px]:gap-y-1" href={href} data-title={entry.data.title}>
+                        <time class="text-[13px] font-normal text-muted max-[720px]:col-start-1 max-[720px]:row-start-1" datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
+                        <strong class="overflow-hidden text-ellipsis whitespace-nowrap text-base font-normal text-ink max-[720px]:col-span-2 max-[720px]:row-start-2 max-[720px]:whitespace-normal">{entry.data.title}</strong>
+                        <span class="text-[13px] font-normal text-muted max-[720px]:col-start-2 max-[720px]:row-start-1">{label}</span>
+                    </a>
+                ))}
+                <p class="m-0 pt-[18px] text-muted" data-empty hidden>該当するメモがありません。</p>
+            </section>
+        </section>
     </PageFrame>
 </BaseLayout>

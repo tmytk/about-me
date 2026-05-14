@@ -1,79 +1,65 @@
-<div class="markdown">
+<div
+    class="markdown [overflow-wrap:anywhere] text-base leading-[1.88] text-ink-soft [font-variant-numeric:tabular-nums] [&>h1:first-child]:hidden [&_a]:font-normal [&_a]:text-blue-deep [&_a]:decoration-blue/45 [&_a]:decoration-1 [&_a]:underline-offset-[0.22em] [&_blockquote]:my-6 [&_blockquote]:border-l-2 [&_blockquote]:border-blue [&_blockquote]:py-0.5 [&_blockquote]:pl-[18px] [&_blockquote]:text-muted [&_details]:text-ink-soft [&_h1]:my-0 [&_h1]:mt-10 [&_h1]:mb-4 [&_h1]:text-[clamp(26px,4vw,34px)] [&_h1]:font-normal [&_h1]:leading-[1.35] [&_h1]:tracking-[-0.01em] [&_h1]:text-balance [&_h1]:text-blue-deep [&_h2]:my-0 [&_h2]:mt-[38px] [&_h2]:mb-3.5 [&_h2]:text-[clamp(22px,3vw,26px)] [&_h2]:font-normal [&_h2]:leading-[1.35] [&_h2]:tracking-[-0.01em] [&_h2]:text-balance [&_h2]:text-blue-deep [&_h3]:my-0 [&_h3]:mt-[30px] [&_h3]:mb-2.5 [&_h3]:text-lg [&_h3]:font-normal [&_h3]:leading-[1.35] [&_h3]:tracking-[-0.01em] [&_h3]:text-balance [&_h3]:text-blue-deep [&_hr]:my-9 [&_hr]:border-0 [&_hr]:border-t [&_hr]:border-line [&_img]:my-6 [&_img]:h-auto [&_img]:rounded-lg [&_li]:my-1.5 [&_li::marker]:text-blue-deep [&_ol]:m-0 [&_ol]:mb-5 [&_ol]:pl-[1.35em] [&_p]:m-0 [&_p]:mb-[18px] [&_p+p]:mt-[-4px] [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-[#2c302f] [&_pre]:px-5 [&_pre]:py-[18px] [&_pre]:text-sm [&_pre]:leading-[1.75] [&_pre]:text-[#f1f0ea] [&_pre_code]:border-0 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit [&_summary]:cursor-pointer [&_summary]:text-blue-deep [&_table]:my-6 [&_table]:block [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-x-auto [&_table]:text-[15px] [&_td]:border-b [&_td]:border-line [&_td]:px-3.5 [&_td]:py-3 [&_td]:text-left [&_th]:border-b [&_th]:border-line [&_th]:px-3.5 [&_th]:py-3 [&_th]:text-left [&_th]:font-normal [&_th]:text-blue-deep [&_ul]:m-0 [&_ul]:mb-5 [&_ul]:pl-[1.35em] [&_:not(pre)>code]:rounded [&_:not(pre)>code]:bg-surface-blue [&_:not(pre)>code]:px-[0.34em] [&_:not(pre)>code]:py-[0.12em] [&_:not(pre)>code]:font-mono [&_:not(pre)>code]:text-[0.9em] [&_:not(pre)>code]:text-blue-deep max-sm:text-[15px]"
+>
     <slot />
 </div>
 
-<style>
-    :global(.markdown) {
-        font-family: "Georgia", "Times New Roman", serif;
-        color: #1f1f1f;
-        line-height: 1.9;
-    }
+<script is:inline>
+    const copyText = async (text) => {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            return;
+        }
 
-    :global(.markdown h1),
-    :global(.markdown h2),
-    :global(.markdown h3) {
-        margin-top: 24px;
-        margin-bottom: 12px;
-    }
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+    };
 
-    :global(.markdown h1) {
-        font-size: 28px;
-    }
+    const setupCodeCopy = () => {
+        document.querySelectorAll(".markdown pre").forEach((pre) => {
+            if (pre.parentElement?.classList.contains("code-block")) return;
 
-    :global(.markdown h2) {
-        font-size: 22px;
-    }
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-block group relative my-6";
+            pre.parentNode?.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+            pre.classList.add("!m-0");
 
-    :global(.markdown h3) {
-        font-size: 18px;
-    }
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "pointer-events-none absolute right-3 top-2 border-0 bg-transparent p-0 font-mono text-[11px] leading-none text-[#f1f0ea]/45 opacity-0 transition-colors transition-opacity hover:text-[#f1f0ea] group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100";
+            button.textContent = "copy";
+            button.setAttribute("aria-label", "コードをコピー");
+            wrapper.appendChild(button);
 
-    :global(.markdown p) {
-        margin: 0 0 12px;
-    }
+            button.addEventListener("click", async () => {
+                const code = pre.querySelector("code")?.innerText ?? pre.innerText;
+                try {
+                    await copyText(code);
+                    button.textContent = "copied";
+                    window.setTimeout(() => {
+                        button.textContent = "copy";
+                    }, 1200);
+                } catch {
+                    button.textContent = "failed";
+                    window.setTimeout(() => {
+                        button.textContent = "copy";
+                    }, 1200);
+                }
+            });
+        });
+    };
 
-    :global(.markdown ul) {
-        padding-left: 18px;
-        margin: 0 0 12px;
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupCodeCopy);
+    } else {
+        setupCodeCopy();
     }
-
-    :global(.markdown table) {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 0 0 16px;
-        font-size: 14px;
-    }
-
-    :global(.markdown th),
-    :global(.markdown td) {
-        text-align: left;
-        padding: 6px 8px;
-        border-bottom: 1px solid #e0e0e0;
-    }
-
-    :global(.markdown code) {
-        font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
-        font-size: 0.9em;
-        background: #f5f5f5;
-        padding: 0 4px;
-        border-radius: 4px;
-    }
-
-    :global(.markdown pre) {
-        background: #f5f5f5;
-        padding: 12px;
-        border-radius: 12px;
-        overflow-x: auto;
-        margin: 0 0 16px;
-    }
-
-    :global(.markdown pre code) {
-        background: transparent;
-        padding: 0;
-        border-radius: 0;
-    }
-
-    :global(.markdown a) {
-        color: #2d5aa6;
-    }
-</style>
+</script>

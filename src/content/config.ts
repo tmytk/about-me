@@ -9,7 +9,7 @@ const baseSchema = defineCollection({
 });
 
 export const collections = {
-    tech: baseSchema,
-    random: baseSchema,
+    works: baseSchema,
+    notes: baseSchema,
     music: baseSchema,
 };
